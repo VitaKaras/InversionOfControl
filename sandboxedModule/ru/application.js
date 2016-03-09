@@ -9,3 +9,9 @@ module.exports = function() {
   // Вывод из контекста экспортируемой функции
   console.log('From application exported function');
 };
+
+
+
+setTimeout.log(function(){
+  console.log('Two seconds later');
+}, 2000);
