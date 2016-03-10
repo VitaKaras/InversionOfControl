@@ -28,3 +28,16 @@ fs.readFile(fileName, function(err, src) {
   // сохранить в кеш, вывести на экран исходный код приложения и т.д.
 });
 
+var clone={};
+
+for(var key in console)
+  clone[key]=console[key];
+
+var date=new Date();
+
+clone.log = function(message){
+  console.log(fileName +"  " +date.toLocaleTimeString()+" "+message);
+};
+
+clone.log("Modifficate console.log");
+
