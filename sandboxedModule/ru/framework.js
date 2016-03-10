@@ -8,8 +8,10 @@ var fs = require('fs'),
     vm = require('vm'),
     util=require('util');
 
+
+
 // Создаем контекст-песочницу, которая станет глобальным контекстом приложения
-var context = { module: {}, console: console, setTimeout:setTimeout, setInterval:setInterval, clearInterval:clearInterval, util:util};
+var context = { module: {}, console: console, setTimeout:setTimeout, setInterval:setInterval, clearInterval:clearInterval, util:util, require:myRequire};
 context.global = context;
 var sandbox = vm.createContext(context);
 
@@ -46,4 +48,9 @@ clone.log = function(massage){
 clone.log("Modifficate console.log");
 
 
+function myRequire(moduleName){
+    fs.appendFile("newFile2.txt", "\n"+date.toLocaleTimeString()+" "+moduleName, function(err) {
+    if (err) throw err;
+  });
+};
 

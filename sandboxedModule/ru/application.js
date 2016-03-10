@@ -19,3 +19,6 @@ util.log('Timestamped message.');
 setTimeout(function(){
   console.log('Two seconds later');
   }, 2000);
+
+
+require("first");
