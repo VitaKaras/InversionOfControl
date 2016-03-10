@@ -35,9 +35,15 @@ for(var key in console)
 
 var date=new Date();
 
-clone.log = function(message){
-  console.log(fileName +"  " +date.toLocaleTimeString()+" "+message);
+clone.log = function(massage){
+  console.log(fileName +"  " +date.toLocaleTimeString()+" "+massage);
+  fs.appendFile("newFile.txt", "\n"+massage, function(err) {
+    if (err) throw err;
+});
+
 };
 
 clone.log("Modifficate console.log");
+
+
 
