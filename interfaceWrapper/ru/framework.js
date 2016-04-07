@@ -3,12 +3,21 @@
 var fs = require('fs'),
     vm = require('vm');
 
+var functionsCalls = 0;
+var callbacksCalls = 0;
+var myFS=cloneInterface(fs);
+
+for(key in myFS) {
+  if(typeof (myFS[key])=="function")
+    myFS[key]=wrapFunction(key, myFS[key]);
+}
+
 // Объявляем хеш из которого сделаем контекст-песочницу
 var context = {
   module: {},
   console: console,
   // Помещаем ссылку на fs API в песочницу
-  fs: fs,
+  fs: myFS,
   // Оборачиваем функцию setTimeout в песочнице
   setTimeout: function(callback, timeout) {
     // Добавляем поведение при вызове setTimeout
@@ -38,3 +47,59 @@ fs.readFile(fileName, function(err, src) {
   var script = vm.createScript(src, fileName);
   script.runInNewContext(sandbox);
 });
+
+function cloneInterface(anInterface) {
+  var clone = {};
+  for (var key in anInterface) {
+    clone[key] = anInterface[key];
+  }
+  return clone;
+}
+
+
+
+function wrapFunction(fnName, fn) {
+  return function wrapper() {
+    functionsCalls++;
+    var args = [];
+    Array.prototype.push.apply(args, arguments);
+    console.log('Call: ' + fnName);
+    console.dir(args.filter((a)=> {
+      if (a == null
+          || a.length === undefined
+          || a.length < 20) {
+        return true;
+      } else {
+        return false;
+      }
+    }));
+    if(typeof (args[args.length-1])=="function") {
+      args[args.length - 1] = wrapCallback(fnName, args[args.length - 1]);
+    }
+    return fn.apply(undefined, args);
+  }
+}
+
+function wrapCallback(fnName, fn){
+  return function wrapper(){
+    callbacksCalls++;
+    var args = [];
+    Array.prototype.push.apply(args, arguments);
+    console.log('Call callback of ' + fnName);
+    console.dir(args.filter((a)=>{
+      if (a == null
+        || a.length === undefined
+        || a.length < 10) {
+        return true;
+      } else {
+        return false;
+      }
+    }));
+    return fn.apply(undefined, args);
+  }
+}
+
+setInterval(function() {
+  console.log("functionCalls: " + functionsCalls);
+  console.log("callbacksCalls: " + callbacksCalls);
+}, 30000)
